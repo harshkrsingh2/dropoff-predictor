@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Academic Lens — AI Student Analytics</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+
+<!-- ── SIDEBAR ─────────────────────────────────────────────────── -->
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-icon">AL</div>
+    <div>
+      <div class="logo-name">Academic Lens</div>
+      <div class="logo-sub">AI STUDENT ANALYTICS</div>
+    </div>
+  </div>
+
+  <nav class="sidebar-nav">
+    <a class="nav-item" data-page="dashboard" onclick="showPage('dashboard')">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
+        <rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/>
+      </svg>
+      Dashboard
+    </a>
+    <a class="nav-item" data-page="students" onclick="showPage('students')">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>
+        <path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+      </svg>
+      Students
+    </a>
+    <a class="nav-item" data-page="insights" onclick="showPage('insights')">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/>
+        <line x1="6" y1="20" x2="6" y2="14"/>
+      </svg>
+      Insights
+    </a>
+    <a class="nav-item active" data-page="upload" onclick="showPage('upload')">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/>
+        <path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/>
+      </svg>
+      Upload Data
+    </a>
+  </nav>
+
+  <button class="btn-generate" onclick="generateReport()">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+      <polyline points="14 2 14 8 20 8"/>
+    </svg>
+    Generate Report
+  </button>
+
+  <div class="sidebar-footer">
+    <a class="nav-item-footer" onclick="showToast('Settings coming soon')">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="3"/>
+        <path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/>
+      </svg>
+      Settings
+    </a>
+    <a class="nav-item-footer" onclick="loadTemplate()">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
+        <line x1="12" y1="17" x2="12.01" y2="17"/>
+      </svg>
+      Download Template
+    </a>
+  </div>
+</aside>
+
+<!-- ── MAIN ────────────────────────────────────────────────────── -->
+<main class="main">
+
+  <!-- TOP BAR -->
+  <header class="topbar">
+    <div class="search-wrap">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+      </svg>
+      <input class="search-input" placeholder="Search students by name, ID, or risk…" id="globalSearch" oninput="handleSearch(this.value)">
+    </div>
+    <div class="topbar-right">
+      <button class="icon-btn" onclick="showNotifications()">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+          <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+        </svg>
+        <span class="notif-dot"></span>
+      </button>
+      <span class="topbar-label">Support</span>
+      <div class="avatar">JS</div>
+    </div>
+  </header>
+
+  <!-- PAGE CONTAINER -->
+  <div class="page-container">
+
+    <!-- ── PAGE: UPLOAD ───────────────────────────────────────── -->
+    <div class="page active" id="page-upload">
+      <div class="page-header">
+        <h1>Data Upload</h1>
+        <p>Import institutional records to generate AI-driven performance insights.</p>
+      </div>
+
+      <div class="upload-card" id="uploadZone"
+           ondragover="event.preventDefault();this.classList.add('drag')"
+           ondragleave="this.classList.remove('drag')"
+           ondrop="handleDrop(event)"
+           onclick="document.getElementById('fileInput').click()">
+        <div class="upload-icon">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/>
+          </svg>
+        </div>
+        <h3>Drag &amp; drop your CSV file here</h3>
+        <p class="upload-sub">Supports CSV files with columns: student name, study hours, logins/week, test score.<br>Click to browse or drag directly.</p>
+        <div class="upload-btns" onclick="event.stopPropagation()">
+          <button class="btn-primary" onclick="document.getElementById('fileInput').click()">Browse Files</button>
+          <button class="btn-outline" onclick="loadTemplate()">Download Template CSV</button>
+          <input type="file" id="fileInput" accept=".csv" style="display:none" onchange="handleFileSelect(event)">
+        </div>
+      </div>
+
+      <!-- VALIDATION -->
+      <div class="validation-section" id="validationSection" style="display:none">
+        <div class="validation-header">
+          <div class="val-title">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.5">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            </svg>
+            Validation Progress
+          </div>
+          <div class="status-badge" id="statusBadge">STATUS: PROCESSING</div>
+        </div>
+        <div class="progress-row">
+          <div class="progress-info">
+            <span id="fileName">—</span>
+            <span class="progress-pct" id="progressPct">0%</span>
+          </div>
+          <div class="progress-track">
+            <div class="progress-fill" id="progressFill" style="width:0%"></div>
+          </div>
+        </div>
+        <div class="val-checks">
+          <div class="val-check" id="checkSchema">
+            <div class="check-icon pending" id="checkSchemaIcon">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/></svg>
+            </div>
+            <div>
+              <div class="check-title">Schema Validation</div>
+              <div class="check-sub" id="schemaMsg">Waiting…</div>
+            </div>
+          </div>
+          <div class="val-check" id="checkIntegrity">
+            <div class="check-icon pending" id="checkIntegrityIcon">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/></svg>
+            </div>
+            <div>
+              <div class="check-title">Data Integrity</div>
+              <div class="check-sub" id="integrityMsg">Waiting…</div>
+            </div>
+          </div>
+          <div class="val-check" id="checkBias">
+            <div class="check-icon pending" id="checkBiasIcon">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/></svg>
+            </div>
+            <div>
+              <div class="check-title">AI Bias Audit</div>
+              <div class="check-sub" id="biasMsg">Waiting…</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PREVIEW -->
+      <div class="preview-section" id="previewSection" style="display:none">
+        <div class="preview-header">
+          <div>
+            <div class="preview-title">Data Preview</div>
+            <div class="preview-sub">First 5 rows of uploaded file</div>
+          </div>
+          <button class="btn-primary" onclick="showPage('dashboard')">View Full Dashboard →</button>
+        </div>
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead id="previewHead"></thead>
+            <tbody id="previewBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── PAGE: DASHBOARD ────────────────────────────────────── -->
+    <div class="page" id="page-dashboard">
+      <div class="page-header">
+        <h1>Dashboard</h1>
+        <p>Overview of student engagement and drop-off risk.</p>
+      </div>
+      <div class="metrics-grid">
+        <div class="metric-card">
+          <div class="metric-label">Total Students</div>
+          <div class="metric-val" id="dmTotal">—</div>
+          <div class="metric-sub">in dataset</div>
+        </div>
+        <div class="metric-card danger">
+          <div class="metric-label">High Risk</div>
+          <div class="metric-val" id="dmHigh" style="color:var(--danger)">—</div>
+          <div class="metric-sub">need intervention</div>
+        </div>
+        <div class="metric-card warning">
+          <div class="metric-label">Medium Risk</div>
+          <div class="metric-val" id="dmMed" style="color:var(--warning)">—</div>
+          <div class="metric-sub">monitor closely</div>
+        </div>
+        <div class="metric-card success">
+          <div class="metric-label">Low Risk</div>
+          <div class="metric-val" id="dmLow" style="color:var(--success)">—</div>
+          <div class="metric-sub">on track</div>
+        </div>
+      </div>
+      <div class="charts-row">
+        <div class="chart-card">
+          <div class="chart-title">Study Hours vs Test Score</div>
+          <div style="position:relative;height:220px">
+            <canvas id="chartScatter"></canvas>
+          </div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-title">Risk Distribution</div>
+          <div style="position:relative;height:220px">
+            <canvas id="chartBar"></canvas>
+          </div>
+        </div>
+      </div>
+      <div class="table-card">
+        <div class="table-card-header">
+          <span>Student Records</span>
+          <select class="filter-sel" id="dashFilter" onchange="renderDashTable()">
+            <option value="all">All Students</option>
+            <option value="High">High Risk</option>
+            <option value="Medium">Medium Risk</option>
+            <option value="Low">Low Risk</option>
+          </select>
+        </div>
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>STUDENT ID</th><th>FULL NAME</th><th>STUDY HRS</th>
+                <th>LOGINS/WK</th><th>TEST SCORE</th><th>RISK</th><th>ACTIONS</th>
+              </tr>
+            </thead>
+            <tbody id="dashBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── PAGE: STUDENTS ─────────────────────────────────────── -->
+    <div class="page" id="page-students">
+      <div class="page-header">
+        <h1>Students</h1>
+        <p>Individual student profiles with AI-powered insights.</p>
+      </div>
+      <div class="student-grid" id="studentGrid">
+        <div class="empty-state" style="grid-column:1/-1">
+          <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>
+          </svg>
+          <p>Upload student data to view profiles</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── PAGE: INSIGHTS ─────────────────────────────────────── -->
+    <div class="page" id="page-insights">
+      <div class="page-header">
+        <h1>Insights</h1>
+        <p>AI-generated class-wide recommendations and analysis.</p>
+      </div>
+      <div id="insightContent">
+        <div class="insight-empty">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/>
+            <line x1="12" y1="16" x2="12.01" y2="16"/>
+          </svg>
+          <p>Upload student data then click "Generate Report" to see AI insights</p>
+          <button class="btn-primary" onclick="showPage('upload')">Upload Data</button>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /page-container -->
+</main>
+
+<!-- ── AI PANEL ─────────────────────────────────────────────────── -->
+<aside class="ai-panel">
+  <div class="ai-header">
+    <div class="ai-avatar">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+        <circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
+      </svg>
+    </div>
+    <div>
+      <div class="ai-name">Smart Data Liaison</div>
+      <div class="ai-status"><span class="status-dot"></span>AI ONLINE</div>
+    </div>
+  </div>
+
+  <div class="chat-messages" id="chatMessages">
+    <div class="chat-msg ai">
+      <p>Hello! I'm your AI Analytics advisor. Upload student data and I'll help you identify drop-off risks and build intervention strategies.</p>
+    </div>
+  </div>
+
+  <div class="quick-actions" id="quickActions">
+    <div class="quick-label">SUGGESTED ACTIONS</div>
+    <button class="quick-btn" onclick="sendQuick('Who are the students most at risk of dropping out?')">
+      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/></svg>
+      Identify at-risk students
+    </button>
+    <button class="quick-btn" onclick="sendQuick('Summarize the class performance and engagement levels')">
+      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/></svg>
+      Summarize class performance
+    </button>
+    <button class="quick-btn" onclick="sendQuick('What interventions should I prioritize this week?')">
+      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+      Suggest interventions
+    </button>
+  </div>
+
+  <div class="chat-input-wrap">
+    <input class="chat-input" id="chatInput" placeholder="Ask about your students…">
+    <button class="chat-send" onclick="sendChat()">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5">
+        <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
+      </svg>
+    </button>
+  </div>
+
+  <div class="ai-insight-box">
+    <div class="ai-insight-title">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2">
+        <circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/>
+        <line x1="12" y1="8" x2="12.01" y2="8"/>
+      </svg>
+      AI Insight
+    </div>
+    <p class="ai-insight-text" id="aiInsightText">Upload data to receive real-time AI insights about your cohort.</p>
+  </div>
+</aside>
+
+<!-- FAB (mobile) -->
+<button class="fab" onclick="toggleAIPanel()">
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+    <circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
+  </svg>
+</button>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script src="/static/js/app.js"></script>
+</body>
+</html>
